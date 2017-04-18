@@ -9,7 +9,7 @@ Audio on wicket fallright now only works in Linux
 
 *  Clone this project 
 
-* create virtulenv  by using 'virtulenv cric'
+* create virtulenv  by using 'virtualenv cric'
 
 * Once in the virtualenv, install requirements using 'pip install -r requirements.txt'
 

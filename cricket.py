@@ -10,18 +10,18 @@ import os
 # Method to visit home page of cricbuzz and get urls of matches
 
 
-def get_Matches():
+def get_list_of_Matches():
     r = requests.get("http://www.cricbuzz.com/")
     soup = BeautifulSoup(r.text, 'html.parser')
     global list_matches
     list_matches = soup.find_all(
         'div', {'class': 'cb-col cb-col-25 cb-mtch-blk'})
-    return get_NewScore()
+    return get_scorecard_fromlist()
   # print(f['href'])
 
 
-# method to loop through all the matches returned by get_Matches() method
-def get_NewScore():
+# method to loop through all the matches returned by get_list_of_Matches() method
+def get_scorecard_fromlist():
     # print(s)
     global url
     global s
@@ -51,11 +51,11 @@ def get_NewScore():
 
 
 # method used after scheduling to get  latest score updates
-def get_Score():
+def refresh_Scorecard():
     r = requests.get(url)
     global soup
     soup = BeautifulSoup(r.text, 'html.parser')
-    getStatus()
+    get_match_status()
     for item in soup.find_all('div', {'class': 'cb-min-bat-rw'}):
         text = item.text
         if "CRR:" in text:
@@ -63,7 +63,7 @@ def get_Score():
             print_match_summary(text)
         else:
             print(text)
-            get_Matches()
+            get_list_of_Matches()
 
 
 def finished():
@@ -76,7 +76,7 @@ def finished():
 # method to get recent balls and runs on that balls
 
 
-def recent():
+def recent_diliveris():
     # print(soup)
     recent_balls = soup.find_all(
         'div', attrs={'class': 'cb-col cb-col-100 cb-font-12 cb-text-gray cb-min-rcnt'})
@@ -95,7 +95,7 @@ def recent():
 # how much runs needed
 
 
-def getStatus():
+def get_match_status():
     # print(soup)
     try:
         match_Status = []
@@ -117,7 +117,7 @@ def getStatus():
 
     return status
 
-# method called by get_NewScore() to print the data in a tabular form
+# method called by get_scorecard_fromlist() to print the data in a tabular form
 
 
 def print_match_summary(t):
@@ -132,24 +132,24 @@ def print_match_summary(t):
     ongoing_data = [
         [colored('Match', 'green'), colored('Status', 'green'),
          colored('Recent balls', 'green')],
-        [colored(first_ining_score + t, 'yellow'), colored(getStatus(), 'white'), colored(recent(), 'magenta')]]
+        [colored(first_ining_score + t, 'yellow'), colored(get_match_status(), 'white'), colored(recent_diliveris(), 'magenta')]]
     table = AsciiTable(ongoing_data)
     print(table.table)
-    if("Innings Break" in getStatus()):
+    if("Innings Break" in get_match_status()):
         global wicket_count
         wicket_count = 0
         print(colored(
             "Take a Coffee meanwhile or check others it's a Innings break here", "red"))
         cancel_scedule()
-        get_Matches()
-    elif("Stump" in getStatus()):
+        get_list_of_Matches()
+    elif("Stump" in get_match_status()):
         wicket_count = 0
         cancel_scedule()
-        get_Matches()
-    elif("stopped" in getStatus()):
+        get_list_of_Matches()
+    elif("stopped" in get_match_status()):
         wicket_count = 0
         cancel_scedule()
-        get_Matches()
+        get_list_of_Matches()
 
 # get the status of the match weather it is live or finished
 
@@ -179,11 +179,11 @@ def live_game():
             # print(item.text)
                 # print(user_input())
                 if(user_input()):
-                    # print("get_Score")
+                    # print("refresh_Scorecard")
 
                     getplayingeleven()
-                    schedule_matche()
-                    return get_Score()
+                    schedule_match()
+                    return refresh_Scorecard()
                 else:
                     break
             else:
@@ -211,8 +211,8 @@ def finsihed_game():
             # print(item.text)
             keep_checking = int(input('Wanna keep check on this Press 1'))
             if(keep_checking == 1):
-                schedule_matche()
-                return get_Score()
+                schedule_match()
+                return refresh_Scorecard()
             else:
                 # print(list_matches)
                 break
@@ -322,9 +322,9 @@ def user_input():
 # method used to schedule the match
 
 
-def schedule_matche():
+def schedule_match():
     try:
-        schedule.every(30).seconds.do(get_Score).tag('score_updates', 'task')
+        schedule.every(30).seconds.do(refresh_Scorecard).tag('score_updates', 'task')
         while 1:
             schedule.run_pending()
             time.sleep(1)
@@ -376,9 +376,9 @@ if __name__ == "__main__":
         print(colored(
             "\n                 #1) If a Live Match is avialable you will get a option to follow it  ", "red"))
         print(colored(
-            "\n                 #2) Choosed Match score will get update after every 30 seconds", 'red'))
+            "\n                 #2) Choosen Match score will get update after every 30 seconds", 'red'))
         print(colored(
-            "\n                 #3) if a wicket fall it will notify you so put your headphones on", 'red'))
+            "\n                 #3) if a wicket falls it will notify you so put your headphones on", 'red'))
         print(colored(
             "                            Powerd by http://www.cricbuzz.com/", "green"))
         print(colored(
@@ -392,6 +392,6 @@ if __name__ == "__main__":
         soup = ''
         list_url = []
         list_matches = []
-        get_Matches()
+        get_list_of_Matches()
     except KeyboardInterrupt:
         quit()
