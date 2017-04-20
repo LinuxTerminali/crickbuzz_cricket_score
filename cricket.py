@@ -91,8 +91,54 @@ def recent_diliveris():
         recent_ball = ' '
     return recent_ball
 
-# method to get status of the match ex innings break, stumps or rain or
-# how much runs needed
+#method to get crrent batsman and bowler
+
+def get_current_bastman_bowler():
+    batsman_1 = ' '
+    batsman_2 = ' '
+    bowler_1  = ' '
+    bowler_2  = ' '
+    items = soup.find_all('div',{'class':'cb-col cb-col-100 cb-min-itm-rw'})
+    if(len(items)==4):
+
+      batsman_1 = items[0].find_all('div',{'class':'cb-col cb-col-50'})[0].text
+      batsman_1 = batsman_1 + " "+items[0].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[0].text
+      batsman_1 = batsman_1 + "("+items[0].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[1].text+")"
+
+      batsman_2 = items[1].find_all('div',{'class':'cb-col cb-col-50'})[0].text
+      batsman_2 = batsman_2 + " "+items[1].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[0].text
+      batsman_2 = batsman_2 + "("+items[1].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[1].text+")"
+      
+      bowler_1 = items[2].find_all('div',{'class':'cb-col cb-col-50'})[0].text
+      bowler_1 = bowler_1 +" "+items[2].find_all('div',{'class':'cb-col cb-col-10 text-right'})[0].text
+      bowler_1 = bowler_1 +" "+items[2].find_all('div',{'class':'cb-col cb-col-10 text-right'})[1].text
+      bowler_1 = bowler_1 +" "+items[2].find_all('div',{'class':'cb-col cb-col-8 text-right'})[1].text
+
+
+
+      bowler_2 = items[3].find_all('div',{'class':'cb-col cb-col-50'})[0].text
+      bowler_2 = bowler_2 +" "+items[3].find_all('div',{'class':'cb-col cb-col-10 text-right'})[0].text
+      bowler_2 = bowler_2 +" "+items[3].find_all('div',{'class':'cb-col cb-col-10 text-right'})[1].text
+      bowler_2 = bowler_2 +" "+items[3].find_all('div',{'class':'cb-col cb-col-8 text-right'})[1].text
+      #print(batsman_1,batsman_2,bowler_1,bowler_2)
+    elif(len(items))==3:
+      batsman_1 = items[0].find_all('div',{'class':'cb-col cb-col-50'})[0].text
+      batsman_1 = batsman_1 + " "+items[0].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[0].text
+      batsman_1 = batsman_1 + "("+items[0].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[1].text+")"
+
+      bowler_1 = items[1].find_all('div',{'class':'cb-col cb-col-50'})[0].text
+      bowler_1 = bowler_1 +" "+items[1].find_all('div',{'class':'cb-col cb-col-10 text-right'})[0].text
+      bowler_1 = bowler_1 +" "+items[1].find_all('div',{'class':'cb-col cb-col-10 text-right'})[1].text
+      bowler_1 = bowler_1 +" "+items[1].find_all('div',{'class':'cb-col cb-col-8 text-right'})[1].text
+
+      bowler_2 = items[2].find_all('div',{'class':'cb-col cb-col-50'})[0].text
+      bowler_2 = bowler_2 +" "+items[2].find_all('div',{'class':'cb-col cb-col-10 text-right'})[0].text
+      bowler_2 = bowler_2 +" "+items[2].find_all('div',{'class':'cb-col cb-col-10 text-right'})[1].text
+      bowler_2 = bowler_2 +" "+items[2].find_all('div',{'class':'cb-col cb-col-8 text-right'})[1].text
+
+    return batsman_1,batsman_2,bowler_1,bowler_2
+
+# method to get status of the match ex innings break, stumps or rain or how much runs needed
 
 
 def get_match_status():
@@ -129,10 +175,15 @@ def print_match_summary(t):
         first_ining_score = " "
     else:
         first_ining_score = first_inings.text
+    current_batsman_bowler = get_current_bastman_bowler()
+    batsmans =   current_batsman_bowler[0]+"\n"+current_batsman_bowler[1]
+    bowler = current_batsman_bowler[2]+"\n"+current_batsman_bowler[3]
+    #print(batsmans)
     ongoing_data = [
         [colored('Match', 'green'), colored('Status', 'green'),
-         colored('Recent balls', 'green')],
-        [colored(first_ining_score + t, 'yellow'), colored(get_match_status(), 'white'), colored(recent_diliveris(), 'magenta')]]
+         colored('Recent balls', 'green'),colored('Batsmans R  B','green'),colored('Bowlers O R W','green')],
+        [colored(first_ining_score + t, 'yellow'), colored(get_match_status(), 'white'), colored(recent_diliveris(), 'magenta'),
+         colored(batsmans,'yellow'),colored(bowler,'yellow')]]
     table = AsciiTable(ongoing_data)
     print(table.table)
     if("Innings Break" in get_match_status()):
@@ -324,7 +375,7 @@ def user_input():
 
 def schedule_match():
     try:
-        schedule.every(30).seconds.do(refresh_Scorecard).tag('score_updates', 'task')
+        schedule.every(3).seconds.do(refresh_Scorecard).tag('score_updates', 'task')
         while 1:
             schedule.run_pending()
             time.sleep(1)
