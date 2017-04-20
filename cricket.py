@@ -375,7 +375,7 @@ def user_input():
 
 def schedule_match():
     try:
-        schedule.every(3).seconds.do(refresh_Scorecard).tag('score_updates', 'task')
+        schedule.every(30).seconds.do(refresh_Scorecard).tag('score_updates', 'task')
         while 1:
             schedule.run_pending()
             time.sleep(1)
