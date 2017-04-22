@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import requests
 from bs4 import BeautifulSoup, Comment
 import schedule
@@ -30,12 +32,12 @@ def get_scorecard_fromlist():
     while(i != len(list_matches)):
         s = list_matches[i].find_all('a', href=True)
         # print(s)
-        url = "http://www.cricbuzz.com/"+s[0]['href']
+        url = "http://www.cricbuzz.com/" + s[0]['href']
         r = requests.get(url)
         # print(url)
         global soup
         soup = BeautifulSoup(r.text, 'html.parser')
-        # print(soup.find_all('div',{'class':'cb-min-bat-rw'}))
+        # print(soup.find_all('div', {'class': 'cb-min-bat-rw'}))
         # print(get_live_Status())
         if(get_live_Status()):
             live_game()
@@ -67,8 +69,7 @@ def refresh_Scorecard():
 
 
 def finished():
-    finished = soup.find_all(
-        'div', {'class': 'cb-col cb-col-100 cb-min-stts cb-text-mom'})
+    finished = soup.find_all('div', {'class': 'cb-col cb-col-100 cb-min-stts cb-text-mom'})
     if(len(finished) == 0):
         finished = soup.find_all('div', {'class': 'cb-text-complete'})
     return finished[0].text
@@ -78,65 +79,67 @@ def finished():
 
 def recent_diliveris():
     # print(soup)
-    recent_balls = soup.find_all(
-        'div', attrs={'class': 'cb-col cb-col-100 cb-font-12 cb-text-gray cb-min-rcnt'})
+    recent_balls = soup.find_all('div', attrs={'class': 'cb-col cb-col-100 cb-font-12 cb-text-gray cb-min-rcnt'})
     # print(recent_balls)
     # print(soup)
     # recent_balls[0].span.clear()
     # print(recent_balls[0].get_text())
     try:
         recent_ball = recent_balls[0].text
-        recent_ball = recent_ball.strip('Recent:  ')
+        recent_ball = recent_ball.strip('Recent: ')
     except IndexError:
         recent_ball = ' '
     return recent_ball
+
+
 
 #method to get crrent batsman and bowler
 
 def get_current_bastman_bowler():
     batsman_1 = ' '
     batsman_2 = ' '
-    bowler_1  = ' '
-    bowler_2  = ' '
-    items = soup.find_all('div',{'class':'cb-col cb-col-100 cb-min-itm-rw'})
-    if(len(items)==4):
+    bowler_1 = ' '
+    bowler_2 = ' '
+    items = soup.find_all('div', {'class': 'cb-col cb-col-100 cb-min-itm-rw'})
+    class01 = {'class': 'cb-col cb-col-10 ab text-right'}
+    class02 = {'class': 'cb-col cb-col-10 text-right'}
+    class03 = {'class': 'cb-col cb-col-8 text-right'}
+    class04 = {'class': 'cb-col cb-col-50'}
+    if(len(items) == 4):
+        batsman_1 = items[0].find_all('div', class04)[0].text
+        batsman_1 += " " + items[0].find_all('div', class01)[0].text
+        batsman_1 += "(" + items[0].find_all('div', class01)[1].text + ")"
 
-      batsman_1 = items[0].find_all('div',{'class':'cb-col cb-col-50'})[0].text
-      batsman_1 = batsman_1 + " "+items[0].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[0].text
-      batsman_1 = batsman_1 + "("+items[0].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[1].text+")"
+        batsman_2 = items[1].find_all('div', class04)[0].text
+        batsman_2 += " " + items[1].find_all('div', class01)[0].text
+        batsman_2 += "(" + items[1].find_all('div', class01)[1].text + ")"
 
-      batsman_2 = items[1].find_all('div',{'class':'cb-col cb-col-50'})[0].text
-      batsman_2 = batsman_2 + " "+items[1].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[0].text
-      batsman_2 = batsman_2 + "("+items[1].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[1].text+")"
-      
-      bowler_1 = items[2].find_all('div',{'class':'cb-col cb-col-50'})[0].text
-      bowler_1 = bowler_1 +" "+items[2].find_all('div',{'class':'cb-col cb-col-10 text-right'})[0].text
-      bowler_1 = bowler_1 +" "+items[2].find_all('div',{'class':'cb-col cb-col-10 text-right'})[1].text
-      bowler_1 = bowler_1 +" "+items[2].find_all('div',{'class':'cb-col cb-col-8 text-right'})[1].text
+        bowler_1 = items[2].find_all('div', class04)[0].text
+        bowler_1 += " " + items[2].find_all('div', class02)[0].text
+        bowler_1 += " " + items[2].find_all('div', class02)[1].text
+        bowler_1 += " " + items[2].find_all('div', class03)[1].text
 
+        bowler_2 = items[3].find_all('div', class04)[0].text
+        bowler_2 += " " + items[3].find_all('div', class02)[0].text
+        bowler_2 += " " + items[3].find_all('div', class02)[1].text
+        bowler_2 += " " + items[3].find_all('div', class03)[1].text
+        # print(batsman_1,batsman_2,bowler_1,bowler_2)
+    elif(len(items)) == 3:
+        batsman_1 = items[0].find_all('div', class04)[0].text
+        batsman_1 += " " + items[0].find_all('div', class01)[0].text
+        batsman_1 += "(" + items[0].find_all('div', class01)[1].text + ")"
 
+        bowler_1 = items[1].find_all('div', class04)[0].text
+        bowler_1 += " " + items[1].find_all('div', class02)[0].text
+        bowler_1 += " " + items[1].find_all('div', class02)[1].text
+        bowler_1 += " " + items[1].find_all('div', class03)[1].text
 
-      bowler_2 = items[3].find_all('div',{'class':'cb-col cb-col-50'})[0].text
-      bowler_2 = bowler_2 +" "+items[3].find_all('div',{'class':'cb-col cb-col-10 text-right'})[0].text
-      bowler_2 = bowler_2 +" "+items[3].find_all('div',{'class':'cb-col cb-col-10 text-right'})[1].text
-      bowler_2 = bowler_2 +" "+items[3].find_all('div',{'class':'cb-col cb-col-8 text-right'})[1].text
-      #print(batsman_1,batsman_2,bowler_1,bowler_2)
-    elif(len(items))==3:
-      batsman_1 = items[0].find_all('div',{'class':'cb-col cb-col-50'})[0].text
-      batsman_1 = batsman_1 + " "+items[0].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[0].text
-      batsman_1 = batsman_1 + "("+items[0].find_all('div',{'class':'cb-col cb-col-10 ab text-right'})[1].text+")"
+        bowler_2 = items[2].find_all('div', class04)[0].text
+        bowler_2 += " " + items[2].find_all('div', class02)[0].text
+        bowler_2 += " " + items[2].find_all('div', class02)[1].text
+        bowler_2 += " " + items[2].find_all('div', class03)[1].text
 
-      bowler_1 = items[1].find_all('div',{'class':'cb-col cb-col-50'})[0].text
-      bowler_1 = bowler_1 +" "+items[1].find_all('div',{'class':'cb-col cb-col-10 text-right'})[0].text
-      bowler_1 = bowler_1 +" "+items[1].find_all('div',{'class':'cb-col cb-col-10 text-right'})[1].text
-      bowler_1 = bowler_1 +" "+items[1].find_all('div',{'class':'cb-col cb-col-8 text-right'})[1].text
-
-      bowler_2 = items[2].find_all('div',{'class':'cb-col cb-col-50'})[0].text
-      bowler_2 = bowler_2 +" "+items[2].find_all('div',{'class':'cb-col cb-col-10 text-right'})[0].text
-      bowler_2 = bowler_2 +" "+items[2].find_all('div',{'class':'cb-col cb-col-10 text-right'})[1].text
-      bowler_2 = bowler_2 +" "+items[2].find_all('div',{'class':'cb-col cb-col-8 text-right'})[1].text
-
-    return batsman_1,batsman_2,bowler_1,bowler_2
+    return batsman_1, batsman_2, bowler_1, bowler_2
 
 # method to get status of the match ex innings break, stumps or rain or how much runs needed
 
@@ -146,7 +149,8 @@ def get_match_status():
     try:
         match_Status = []
         tags = ['cb-text-inprogress', 'cb-text-lunch', 'cb-text-stump',
-                'cb-text-innings break', 'cb-text-rain', 'cb-text-tea', 'cb-text-badlight']
+                'cb-text-innings break', 'cb-text-rain', 'cb-text-tea',
+                'cb-text-badlight']
         i = 0
         while(len(match_Status) == 0):
             # print(tags[i])
@@ -168,7 +172,7 @@ def get_match_status():
 
 def print_match_summary(t):
     # print(soup)
-    # print(soup.find_all('div',{'class':'cb-text-stump'}))
+    # print(soup.find_all('div', {'class': 'cb-text-stump'}))
     first_inings = soup.find('div', {'class': 'cb-text-gray cb-font-16'})
     # print()
     if(first_inings == None):
@@ -176,21 +180,26 @@ def print_match_summary(t):
     else:
         first_ining_score = first_inings.text
     current_batsman_bowler = get_current_bastman_bowler()
-    batsmans =   current_batsman_bowler[0]+"\n"+current_batsman_bowler[1]
-    bowler = current_batsman_bowler[2]+"\n"+current_batsman_bowler[3]
-    #print(batsmans)
-    ongoing_data = [
-        [colored('Match', 'green'), colored('Status', 'green'),
-         colored('Recent balls', 'green'),colored('Batsmans R  B','green'),colored('Bowlers O R W','green')],
-        [colored(first_ining_score + t, 'yellow'), colored(get_match_status(), 'white'), colored(recent_diliveris(), 'magenta'),
-         colored(batsmans,'yellow'),colored(bowler,'yellow')]]
+    batsmans = current_batsman_bowler[0] + "\n" + current_batsman_bowler[1]
+    bowler = current_batsman_bowler[2] + "\n" + current_batsman_bowler[3]
+    # print(batsmans)
+    ongoing_data = [[colored('Match', 'green'),
+                     colored('Status', 'green'),
+                     colored('Recent balls', 'green'),
+                     colored('Batsmans R  B', 'green'),
+                     colored('Bowlers O R W', 'green')],
+                    [colored(first_ining_score + t, 'yellow'),
+                     colored(get_match_status(), 'white'),
+                     colored(recent_diliveris(), 'magenta'),
+                     colored(batsmans, 'yellow'),
+                     colored(bowler, 'yellow')]
+                    ]
     table = AsciiTable(ongoing_data)
     print(table.table)
     if("Innings Break" in get_match_status()):
         global wicket_count
         wicket_count = 0
-        print(colored(
-            "Take a Coffee meanwhile or check others it's a Innings break here", "red"))
+        print(colored("Take a Coffee meanwhile or check others it's a Innings break here", "red"))
         cancel_scedule()
         get_list_of_Matches()
     elif("Stump" in get_match_status()):
@@ -224,7 +233,7 @@ def live_game():
         global seen_matches
         if "CRR:" in text:
             if(not(text in seen_matches)):
-                seen_matches = seen_matches+" "+text
+                seen_matches = seen_matches+ " " +text
 
                 print_match_summary(item.text)
             # print(item.text)
@@ -242,11 +251,14 @@ def live_game():
         else:
             # print(seen_matches)
             if(not(text in seen_matches)):
-                seen_matches = seen_matches+" "+text
-                finished_data = [
-                    [colored('Match', 'green'), colored(
-                        'Status', 'green'), colored('Result', 'green')],
-                    [colored(text, 'yellow'), colored("Finished", 'red'), colored(finished(), 'magenta')]]
+                seen_matches = seen_matches + " " + text
+                finished_data = [[colored('Match', 'green'),
+                                  colored('Status', 'green'),
+                                  colored('Result', 'green')],
+                                 [colored(text, 'yellow'),
+                                  colored("Finished", 'red'),
+                                  colored(finished(), 'magenta')]
+                                 ]
                 table = AsciiTable(finished_data)
                 print(table.table)
                 break
@@ -271,12 +283,15 @@ def finsihed_game():
             global seen_matches
             # print(seen_matches)
             if(not(text in seen_matches)):
-                seen_matches = seen_matches+" "+text
+                seen_matches = seen_matches + " " + text
                 previous_text = text
-                finished_data = [
-                    [colored('Match', 'green'), colored(
-                        'Status', 'green'), colored('Result', 'green')],
-                    [colored(text, 'yellow'), colored("Finished", 'red'), colored(finished(), 'magenta')]]
+                finished_data = [[colored('Match', 'green'),
+                                  colored('Status', 'green'),
+                                  colored('Result', 'green')],
+                                 [colored(text, 'yellow'),
+                                  colored("Finished", 'red'),
+                                  colored(finished(), 'magenta')]
+                                 ]
                 table = AsciiTable(finished_data)
                 print(table.table)
                 break
@@ -306,7 +321,7 @@ def check_for_wicket(text):
     except KeyboardInterrupt:
         quit()
 
-    #print("do something")
+    # print("do something")
 
     # print(bea_soup)
 
@@ -328,27 +343,27 @@ def getplayingeleven():
         if(len(rr) == 5):
             print(colored(rr[0].text.replace("Squad", ": "), 'green'), colored(
                 "Today's " + rr[1].text, 'white'))
-            print(colored("On "+rr[2].text, 'red'))
+            print(colored("On " + rr[2].text, 'red'))
             print(" ")
             print(colored(ss[0].text.replace("Squad", " : "),
-                          "green"), colored("Today's "+rr[3].text, 'white'))
-            print(colored("On "+rr[4].text, 'red'))
+                          "green"), colored("Today's " + rr[3].text, 'white'))
+            print(colored("On " + rr[4].text, 'red'))
         elif(len(rr) == 4):
             print(colored(rr[0].text.replace("Squad", ": "), 'green'), colored(
                 "Today's " + rr[1].text, 'white'))
             print(" ")
             print(colored(ss[0].text.replace("Squad", " : "),
-                          "green"), colored("Today's "+rr[3].text, 'white'))
+                          "green"), colored("Today's " + rr[3].text, 'white'))
     except IndexError:
         print('Unable to get the Playing XI')
     except KeyboardInterrupt:
         quit()
     '''for squad in range(len(rr)):
     print(rr[squad].text)
-  for ss in scorecard_soup.find_all('div',{'class','cb-col cb-col-100 cb-minfo-tm-nm cb-minfo-tm2-nm'}):
+  for ss in scorecard_soup.find_all('div', {'class','cb-col cb-col-100 cb-minfo-tm-nm cb-minfo-tm2-nm'}):
      print(ss.text)'''
-    #print(scorecard_soup.find('div',{'class':'cb-col cb-col-73'}))
-    #print(scorecard_soup.find('div',{'class':'cb-col cb-col-100 cb-minfo-tm-nm'}))
+    # print(scorecard_soup.find('div', {'class': 'cb-col cb-col-73'}))
+    # print(scorecard_soup.find('div', {'class': 'cb-col cb-col-100 cb-minfo-tm-nm'}))
     # print(scorecard_soup)
 
 # method used to take user input
@@ -365,7 +380,7 @@ def user_input():
                 # print("false")
                 return False
     except ValueError:
-                #print("Please press 1 to continue or any other number to move ahead")
+                # print("Please press 1 to continue or any other number to move ahead")
         return False
     except KeyboardInterrupt:
         quit()
@@ -393,11 +408,11 @@ def cancel_scedule():
 
 def asciiart():
     art1 = """
-                                   _      _        _   
-                                  (_)    | |      | |  
-                          ___ _ __ _  ___| | _____| |_ 
+                                   _      _        _
+                                  (_)    | |      | |
+                          ___ _ __ _  ___| | _____| |_
                          / __| '__| |/ __| |/ / _ \ __|
-                        | (__| |  | | (__|   <  __/ |_ 
+                        | (__| |  | | (__|   <  __/ |_
                          \___|_|  |_|\___|_|\_\___|\__|
                         """
     art2 = """
