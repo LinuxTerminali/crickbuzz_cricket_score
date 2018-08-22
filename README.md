@@ -1,8 +1,8 @@
 # crickbuzz cricket score Tracker
 A Terminal based program to follow live cricket score by scraping crickbuzz.com
 
-Script requires Python3.5
-Audio on wicket fallright now only works in Linux 
+Script requires Python3.5 
+notification on wicket Linux only 
 ## How to use:
 
 
